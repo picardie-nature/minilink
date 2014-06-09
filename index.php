@@ -1,63 +1,5 @@
 <?php
-if (file_exists('config.php')) require('config.php');
-if (!defined('DBSTR')) define('DBSTR', 'mongodb://localhost:27017');
-if (!defined('PWD')) define('PWD', 'plop');
-if (!defined('HOST')) define('HOST', 'http://l.picnat.fr');
-if (!defined('SEQUENCE')) define('SEQUENCE', 'sequence.txt');
-
-class minilien {
-	protected $l;
-
-	public function __construct($id) {
-		$this->l = self::links()->findOne(array("id"=>basename($id)));
-		if (!$this->l) throw new Exception("Pas trouvé");
-	}
-
-	public function visite() {
-		self::links()->update(array('_id' => new MongoID($this->l['_id'])), array( '$set' => array('visites' => $this->l['visites']+1)));
-		return $this->l['url'];
-	}
-
-	private static function links() {
-		static $liens;
-		if (!isset($liens)) {
-			$m = new MongoClient(DBSTR);
-			$db = $m->minilink;
-			$liens = $db->links;
-		}
-		return $liens;
-	}
-	public static function nouveau($url) {
-		$ele = array("url" => $url, "visites" => 0, "id" => self::nextval());
-		if (!self::links()->insert($ele, array("fsync"=>true))) {
-			throw new Exception("erreur d'enregistrement");
-		}
-		return $ele["id"];
-	}
-
-	private static function nextval() {
-		$f = fopen(SEQUENCE, "r+");
-		if (!flock($f, LOCK_EX)) {
-			throw new Exception('ne peut pas verrouiller la séquence');
-		}
-		$n = intval(fgets($f));
-		fseek($f, 0, SEEK_SET);
-		ftruncate($f, 0);
-		$n++;
-		fputs($f, $n);
-		flock($f, LOCK_UN);
-		fclose($f);
-		$p = array(3,6,9,15);
-		$rp = false;
-		foreach ($p as $up) {
-			if ($n > pow(10,$up)) continue;
-			else { $rp = $up; break; }
-		}
-		if (!$rp) throw new Exception('voir plus large...');
-		$l = $rp;
-		return base64_encode(strrev(sprintf("%0{$rp}d", $n)));
-	}
-}
+require_once('app.php');
 
 if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO']!='/') {
 	try {
@@ -109,9 +51,7 @@ if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO']!='/') {
 			return false;
 		});
 	</script>
-
 	<?php
 	readfile("foot.html");
-	// formulaire et insertion
 }
 ?>
