@@ -1,13 +1,16 @@
 <?php
 require_once('app.php');
 
-if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO']!='/') {
+if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO']!='/' && $_SERVER['PATH_INFO'] != '/index.html') {
 	try {
 		$l = new minilien($_SERVER['PATH_INFO']);
 		$url = $l->visite();
 		header("Location: $url");
 	} catch (Exception $e) {
+		header("HTTP/1.0 404 Not Found"); 
 		readfile("head.html");
+		echo "404 not found<br/>{$_SERVER['PATH_INFO']}";
+		readfile("foot.html");
 	}
 	exit();
 } else {

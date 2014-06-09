@@ -10,7 +10,7 @@ class minilien {
 
 	public function __construct($id) {
 		$this->l = self::links()->findOne(array("id"=>basename($id)));
-		if (!$this->l) throw new Exception("Pas trouvé");
+		if ($this->l == null) throw new Exception("Pas trouvé");
 	}
 
 	public static function byURL($url) {
