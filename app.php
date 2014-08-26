@@ -75,6 +75,10 @@ class minilien {
 	 * @brief enregistre un nouveau lien
 	 */
 	public static function nouveau($url) {
+		// url deja existante ?
+		$old = self::byURL($url);
+		if ($old) return $old->id;
+
 		$ele = array("url" => $url, "visites" => 0, "id" => self::nextval());
 		if (!self::links()->insert($ele, array("fsync"=>true))) {
 			throw new Exception("erreur d'enregistrement");
