@@ -105,7 +105,21 @@ class minilien {
 		}
 		if (!$rp) throw new Exception('voir plus large...');
 		$l = $rp;
+		return self::__id($n);
 		return base64_encode(strrev(sprintf("%0{$rp}d", $n)));
+	}
+
+	private static function __id($n) {
+		$e = 0;
+		$id = '';
+		$n = (int)$n;
+		while (pow(26,$e)<=$n) $e++;
+		for ($i=$e-1; $i>=0; $i--) {
+			$nf = (int)($n/pow(26,$i));
+			$n -= $nf*pow(26,$i);
+			$id .= chr(97+$nf);
+		}
+		return $id;
 	}
 }
 ?>
