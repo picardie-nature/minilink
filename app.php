@@ -110,7 +110,6 @@ class minilien {
 		if (!$rp) throw new Exception('voir plus large...');
 		$l = $rp;
 		return self::__id($n);
-		return base64_encode(strrev(sprintf("%0{$rp}d", $n)));
 	}
 
 	private static function __id($n) {
