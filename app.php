@@ -24,7 +24,12 @@ class minilien {
 			return $this->l[$k];
 		return null;
 	}
-
+	public function change_url($url) {
+		self::links()->update(
+			['_id' => new MongoID($this->l['_id'])],
+			['$set' => ['url' => $url]]
+		);
+	}
 
 	/**
 	 * @brief enregistre une visite sur le lien

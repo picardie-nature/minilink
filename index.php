@@ -1,7 +1,7 @@
 <?php
 require_once('app.php');
-
-if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO']!='/' && $_SERVER['PATH_INFO'] != '/index.html') {
+$exclure = ['/','/index.html','/admin.php'];
+if (isset($_SERVER['PATH_INFO']) && !in_array($_SERVER['PATH_INFO'], $exclure)) {
 	try {
 		$l = new minilien($_SERVER['PATH_INFO']);
 		$url = $l->visite();
@@ -9,11 +9,15 @@ if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO']!='/' && $_SERVER['PATH
 	} catch (Exception $e) {
 		header("HTTP/1.0 404 Not Found"); 
 		readfile("head.html");
-		echo "404 not found<br/>{$_SERVER['PATH_INFO']}";
+		echo "404 Not Found<br/>{$_SERVER['PATH_INFO']}";
 		readfile("foot.html");
 	}
 	exit();
 } else {
+	if ($_SERVER['PATH_INFO'] == '/admin.php') {
+		include 'admin.php';
+		exit(0);
+	}
 	if (isset($_GET['url'])) {
 		try {
 			if ($_GET['pwd'] != PWD) {
