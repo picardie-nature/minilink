@@ -1,8 +1,14 @@
 <?php
 require_once('app.php');
+
+if (array_search($_SERVER['REMOTE_ADDR'], $remotes_ok) === false) {
+	throw new Exception("forbidden {$_SERVER['REMOTE_ADDR']}");	
+}
+
 try {
 	if (!isset($_GET['cmd'])) 
 		throw new Exception('add a cmd argument on your request');
+	
 	switch ($_GET['cmd']) {
 		case 'reduce':
 			if (!isset($_GET['url'])) {
@@ -16,7 +22,7 @@ try {
 			} else {
 				$lid = minilien::nouveau($_GET['url']);
 			}
-			echo json_encode(array('id' => $lid,'reused'=>$reused));
+			echo json_encode(array('id' => $lid, 'reused' => $reused));
 			break;
 		case 'status':
 			if (!isset($_GET['id']))
