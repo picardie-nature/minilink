@@ -5,7 +5,32 @@ if (isset($_SERVER['PATH_INFO']) && !in_array($_SERVER['PATH_INFO'], $exclure)) 
 	try {
 		$l = new minilien($_SERVER['PATH_INFO']);
 		$url = $l->visite();
-		header("Location: $url");
+		if (!isset($_GET['direct'])) {
+			header("Location: $url");
+		} else {
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, "$url");
+			curl_setopt($ch, CURLOPT_HEADER, true);
+			curl_setopt($ch, CURLOPT_NOBODY, true);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			$headers = curl_exec($ch);
+			$headers = explode("\n",$headers);
+			foreach ($headers as $header) {
+				if (preg_match("/(.*): (.*)/",$header,$m)) {
+					switch ($m[1]) {
+						case 'Content-Type':
+						case 'Content-Length':
+							header("{$m[1]}: {$m[2]}");
+							break;
+					}
+				}
+			}
+			curl_setopt($ch, CURLOPT_HEADER, false);
+			curl_setopt($ch, CURLOPT_NOBODY, false);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, false);
+			curl_exec($ch);
+			curl_close($ch);
+		}
 	} catch (Exception $e) {
 		header("HTTP/1.0 404 Not Found"); 
 		readfile("head.html");
